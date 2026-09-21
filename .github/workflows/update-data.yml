@@ -1,0 +1,22 @@
+name: Update Lake County AirBio data
+
+on:
+  schedule:
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python fetch_data.py --out data.json
+      - run: git config user.name "airbio-data-bot" && git config user.email "actions@users.noreply.github.com"
+      - run: git add data.json
+      - run: git diff --staged --quiet && echo "No data changes" || (git commit -m "Update data.json" && git push)
