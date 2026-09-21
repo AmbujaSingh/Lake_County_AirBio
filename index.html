@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lake County AirBio</title>
+<meta name="description" content="Daily pollen, mold, air-quality and weather conditions for Lake County, Illinois, with a searchable map, 7-day trends, and symptom awareness.">
+<meta name="color-scheme" content="light dark">
+<style>
+  :root{
+    --paper:      #EEF1FF;
+    --paper-2:    #E1E6FC;
+    --card:       #FAFBFF;
+    --ink:        #1B1A3B;
+    --ink-soft:   #4B4A78;
+    --muted:      #6F6E9C;
+    --line:       #CDD1F2;
+    --line-strong:#B4B8E8;
+    --brand:      #0E9C86;
+    --brand-ink:  #FFFFFF;
+    --brand-soft: #CFF3EA;
+    --gold:       #C4780A;
+    --gold-soft:  #FDE7C2;
+    --violet:     #6D4FE0;
+
+    --head-bg:    linear-gradient(115deg, #241C5B 0%, #3C2E8C 42%, #0E8F7E 100%);
+    --head-ink:   #FFFFFF;
+    --head-line:  rgba(255,255,255,0.16);
+    --head-accent:#22E0BE;
+
+    --s-tree:     #1baf7a;
+    --s-grass:    #eb6834;
+    --s-weed:     #2a78d6;
+    --good:       #0ca30c;
+    --warn:       #d08a00;
+    --serious:    #ec835a;
+    --critical:   #d03b3b;
+
+    --chart-surface: #fcfcfb;
+    --chart-grid:    #e1e0d9;
+    --chart-axis:    #c3c2b7;
+    --chart-text:    #52514e;
+    --chart-ink:     #0b0b0b;
+
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:      #14123A;
+      --paper-2:    #1B1950;
+      --card:       #221F5E;
+      --ink:        #F4F3FF;
+      --ink-soft:   #C9C7EE;
+      --muted:      #8F8DC4;
+      --line:       #322F73;
+      --line-strong:#423E8E;
+      --brand:      #22E0BE;
+      --brand-ink:  #08201B;
+      --brand-soft: #1E3F45;
+      --gold:       #FFB23D;
+      --gold-soft:  #3A2A12;
+      --violet:     #9D86FF;
+
+      --head-bg:    linear-gradient(115deg, #1A1440 0%, #2E2278 42%, #0E7A6C 100%);
+      --head-ink:   #FFFFFF;
+      --head-line:  rgba(255,255,255,0.14);
+      --head-accent:#22E0BE;
+
+      --s-tree:     #199e70;
+      --s-grass:    #d95926;
+      --s-weed:     #3987e5;
+      --good:       #0ca30c;
+      --warn:       #fab219;
+      --serious:    #ec835a;
+      --critical:   #e66767;
+
+      --chart-surface: #1a1a19;
+      --chart-grid:    #2c2c2a;
+      --chart-axis:    #383835;
+      --chart-text:    #c3c2b7;
+      --chart-ink:     #ffffff;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:      #14123A;
+    --paper-2:    #1B1950;
+    --card:       #221F5E;
+    --ink:        #F4F3FF;
+    --ink-soft:   #C9C7EE;
+    --muted:      #8F8DC4;
+    --line:       #322F73;
+    --line-strong:#423E8E;
+    --brand:      #22E0BE;
+    --brand-ink:  #08201B;
+    --brand-soft: #1E3F45;
+    --gold:       #FFB23D;
+    --gold-soft:  #3A2A12;
+    --violet:     #9D86FF;
+
+    --head-bg:    linear-gradient(115deg, #1A1440 0%, #2E2278 42%, #0E7A6C 100%);
+    --head-ink:   #FFFFFF;
+    --head-line:  rgba(255,255,255,0.14);
+    --head-accent:#22E0BE;
+
+    --s-tree:     #199e70;
+    --s-grass:    #d95926;
+    --s-weed:     #3987e5;
+    --good:       #0ca30c;
+    --warn:       #fab219;
+    --serious:    #ec835a;
+    --critical:   #e66767;
+
+    --chart-surface: #1a1a19;
+    --chart-grid:    #2c2c2a;
+    --chart-axis:    #383835;
+    --chart-text:    #c3c2b7;
+    --chart-ink:     #ffffff;
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:"Fraunces", Georgia, "Times New Roman", serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+    color:var(--ink);
+  }
+  .mono, .num{ font-family:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; }
+  a{ color:var(--brand); }
+  p{ margin:0; }
+
+  .wrap{ max-width:1080px; margin-inline:auto; padding-inline:20px; }
+
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:40;
+    background:var(--head-bg);
+    border-bottom:1px solid var(--head-line);
+  }
+  .top-inner{
+    max-width:1080px; margin-inline:auto; padding:14px 20px;
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  }
+  .brand-mark{ display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+  .brand-mark .glyph{
+    width:34px; height:34px; border-radius:8px;
+    background:var(--head-accent); color:#06140F;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  .brand-mark .name{ font-family:"Fraunces",serif; font-weight:600; font-size:17px; line-height:1.15; color:var(--head-ink); }
+  .brand-mark .sub{ font-size:11px; color:#B9C0F5; letter-spacing:.03em; text-transform:uppercase; }
+
+  nav.tabs{ display:flex; gap:2px; overflow-x:auto; flex:1 1 320px; scrollbar-width:none; }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  nav.tabs button{
+    appearance:none; border:none; background:transparent; cursor:pointer;
+    font:inherit; font-size:13.5px; font-weight:600; color:#C3C3F5;
+    padding:9px 13px; border-radius:7px; white-space:nowrap;
+    transition:background .15s ease, color .15s ease;
+  }
+  nav.tabs button:hover{ background:rgba(255,255,255,0.06); color:var(--head-ink); }
+  nav.tabs button[aria-selected="true"]{ background:var(--head-accent); color:#06140F; }
+  nav.tabs button:focus-visible, button:focus-visible, .chip:focus-visible, input:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+
+  section.panel{ padding-block:34px 60px; }
+  section.panel[hidden]{ display:none; }
+
+  .eyebrow{
+    font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--brand); margin:0 0 8px;
+  }
+  .lede{ color:var(--ink-soft); font-size:15.5px; max-width:64ch; line-height:1.58; margin:9px 0 0; }
+
+  .grid{ display:grid; gap:14px; }
+  .grid.cond{ grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); margin-top:20px; }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 17px; }
+  .cond-card .label{ font-size:11.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+  .cond-card .value{ font-family:"Fraunces",serif; font-size:25px; font-weight:600; margin-top:6px; line-height:1.1; }
+  .cond-card .row{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
+    padding:4px 9px; border-radius:6px; letter-spacing:.01em;
+  }
+  .pill::before{ content:""; width:6px; height:6px; border-radius:1px; background:currentColor; flex:0 0 auto; }
+  .pill.good{ background:color-mix(in srgb, var(--good) 15%, transparent); color:var(--good); }
+  .pill.warn{ background:color-mix(in srgb, var(--warn) 18%, transparent); color:var(--warn); }
+  .pill.serious{ background:color-mix(in srgb, var(--serious) 20%, transparent); color:var(--serious); }
+  .pill.critical{ background:color-mix(in srgb, var(--critical) 16%, transparent); color:var(--critical); }
+
+  .risk-hero{
+    margin-top:20px; display:grid; grid-template-columns:auto 1fr; gap:26px;
+    border:1px solid var(--line); border-radius:14px;
+    padding:22px 24px; align-items:center; color:#fff;
+  }
+  .risk-hero.lvl-low{ background:linear-gradient(120deg, #0C8A5E, #12B37E 70%); border-color:transparent; }
+  .risk-hero.lvl-moderate{ background:linear-gradient(120deg, #B5720A, #E0A215 70%); border-color:transparent; }
+  .risk-hero.lvl-high{ background:linear-gradient(120deg, #B0233F, #E85A4F 70%); border-color:transparent; }
+  .risk-dial{ width:100px; height:100px; flex:0 0 auto; }
+  .risk-hero h2{ font-size:12.5px; margin:0; color:rgba(255,255,255,0.82); font-family:"IBM Plex Sans",sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.07em; }
+  .risk-hero .score{ font-family:"Fraunces",serif; font-size:34px; font-weight:600; margin:2px 0 6px; color:#fff; }
+  .risk-hero p{ color:rgba(255,255,255,0.92); font-size:14.5px; line-height:1.55; max-width:58ch; }
+  .risk-hero .loc{ font-size:11.5px; color:#fff; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px; opacity:.85; }
+
+  .callout{
+    margin-top:16px; border-left:3px solid var(--gold); background:var(--gold-soft);
+    border-radius:0 8px 8px 0; padding:13px 16px; font-size:14px; color:var(--ink); line-height:1.5;
+  }
+
+  .live-note{
+    margin-top:14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+  .live-note .live-dot{
+    width:7px; height:7px; border-radius:50%; background:var(--good); flex:0 0 auto;
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 25%, transparent);
+  }
+  .live-note b{ color:var(--ink); }
+  .live-note a{ color:var(--brand); text-decoration:none; border-bottom:1px solid currentColor; }
+
+  /* ---- map / locator ---- */
+  .locator{ margin-top:22px; }
+  .locator .card{ padding:18px 18px 12px; overflow:hidden; }
+  .loc-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .loc-head h3{ font-size:16px; margin:0; font-family:"Fraunces",serif; font-weight:600; }
+  .loc-note{ font-size:11.5px; color:var(--muted); }
+  .search-row{ display:flex; gap:8px; margin-top:12px; position:relative; z-index:2; flex-wrap:wrap; }
+  .search-row input{ min-width:200px; }
+  @media (max-width:480px){ .search-row button{ flex:1; } .search-row input{ flex:1 1 100%; } }
+  .search-row input{
+    flex:1; font:inherit; font-size:14px; padding:11px 13px; border-radius:9px;
+    border:1.5px solid var(--line-strong); background:var(--paper); color:var(--ink);
+  }
+  .search-row button{
+    font:inherit; font-size:12.5px; font-weight:700; padding:11px 15px; border-radius:9px;
+    border:1.5px solid var(--line-strong); background:var(--card); color:var(--ink-soft); cursor:pointer;
+    white-space:nowrap;
+  }
+  .search-row button:hover{ color:var(--ink); border-color:var(--brand); }
+  .search-row button#citySearchBtn{ background:var(--brand); color:var(--brand-ink); border-color:var(--brand); }
+  .search-row button#citySearchBtn:hover{ filter:brightness(1.05); }
+  .search-msg{ margin-top:8px; font-size:12.5px; color:var(--critical); }
+  .search-msg[hidden]{ display:none; }
+  .map-banner{
+    margin-top:12px; display:none; align-items:center; gap:8px;
+    background:var(--brand-soft); color:var(--brand); border:1px solid var(--brand);
+    border-radius:9px; padding:8px 13px; font-size:13px; font-weight:700;
+  }
+  .map-banner.show{ display:inline-flex; }
+  .map-banner .dot2{ width:7px; height:7px; border-radius:50%; background:var(--brand); flex:0 0 auto; }
+  .map-stage{ position:relative; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+  #countyMap{ width:100%; height:460px; background:var(--paper-2); }
+  @media (max-width:600px){ #countyMap{ height:360px; } }
+  .map-caption{ font-size:11.5px; color:var(--muted); margin-top:8px; }
+  .map-legend{ display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--ink-soft); }
+  .map-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .map-legend i{ width:10px; height:10px; border-radius:50%; display:inline-block; border:1.5px solid rgba(0,0,0,0.15); }
+  /* Leaflet chrome, restyled to match the site's theme */
+  .leaflet-popup-content-wrapper{ background:var(--card); color:var(--ink); border-radius:10px; }
+  .leaflet-popup-tip{ background:var(--card); }
+  .leaflet-popup-content{ font-family:"IBM Plex Sans",sans-serif; font-size:13px; margin:11px 13px; }
+  .leaflet-popup-content b{ font-family:"Fraunces",serif; font-size:14.5px; }
+  .leaflet-popup-content .pop-btn{
+    display:inline-block; margin-top:8px; font-size:12px; font-weight:700; color:var(--brand-ink);
+    background:var(--brand); padding:5px 10px; border-radius:6px; text-decoration:none; cursor:pointer;
+  }
+  .leaflet-control-attribution{ font-size:10px; background:color-mix(in srgb, var(--card) 85%, transparent) !important; color:var(--muted) !important; }
+  .leaflet-control-attribution a{ color:var(--ink-soft) !important; }
+  .city-tip{
+    background:var(--card) !important; color:var(--ink) !important; border:1px solid var(--line-strong) !important;
+    font-family:"IBM Plex Mono",monospace; font-size:11px !important; font-weight:600;
+    padding:3px 7px !important; border-radius:6px !important; box-shadow:none !important;
+  }
+  .city-tip::before{ display:none !important; }
+
+  .chart-card{ padding:18px 18px 10px; }
+  .chart-card .chead{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+  .chart-card h3{ font-size:15px; margin:0; font-family:"IBM Plex Sans",sans-serif; font-weight:700; }
+  .chart-card .cnote{ font-size:11.5px; color:var(--muted); }
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--ink-soft); margin:2px 0 6px; }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .legend i{ width:9px; height:9px; border-radius:2px; display:inline-block; }
+  .chart-wrap{ overflow-x:auto; }
+  .chart-wrap svg{ display:block; }
+  .chart-narr{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; padding:10px 2px 4px; }
+
+  .trend-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
+  @media (max-width:760px){ .trend-grid{ grid-template-columns:1fr; } }
+
+  .pattern-list{ display:grid; gap:9px; margin-top:4px; }
+  .pattern-list .row{ display:flex; gap:10px; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .pattern-list .row .mark{ flex:0 0 auto; width:4px; height:4px; margin-top:8px; background:var(--brand); border-radius:1px; }
+
+  .sym-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; margin-top:20px; }
+  .sym-card .top{ display:flex; align-items:center; gap:10px; }
+  .sym-card .dot{ width:11px; height:11px; border-radius:3px; flex:0 0 auto; }
+  .sym-card h3{ font-size:16px; margin:0; font-family:"Fraunces",serif; font-weight:600; }
+  .sym-card .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .chip{
+    font-size:12px; font-weight:500; color:var(--ink-soft); background:var(--paper-2);
+    border:1px solid var(--line); padding:4px 9px; border-radius:6px;
+  }
+
+  .steps{ list-style:none; margin:20px 0 0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:640px){ .steps{ grid-template-columns:1fr; } }
+  .steps li{
+    display:flex; gap:11px; background:var(--card); border:1px solid var(--line);
+    border-radius:10px; padding:13px 14px; font-size:14px; line-height:1.5; align-items:flex-start;
+  }
+  .steps li svg{ flex:0 0 auto; margin-top:2px; }
+
+  .prod-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; margin-top:16px; }
+  .prod-card h3{ font-size:14px; margin:0 0 8px; font-family:"IBM Plex Sans",sans-serif; font-weight:700; }
+  .prod-card ul{ margin:0; padding-left:18px; font-size:13.5px; color:var(--ink-soft); line-height:1.65; }
+  .prod-card a.buy{ display:inline-block; margin-top:10px; font-size:12.5px; font-weight:600; color:var(--brand); text-decoration:none; border-bottom:1px solid currentColor; }
+
+  .disclaimer-box{
+    margin-top:20px; border:1px solid var(--line-strong); border-radius:10px;
+    padding:14px 16px; background:var(--paper-2); font-size:13px; color:var(--ink-soft); line-height:1.6;
+  }
+
+  .about-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; margin-top:20px; align-items:start; }
+  @media (max-width:760px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-grid p{ font-size:14.5px; line-height:1.68; color:var(--ink-soft); margin:0 0 14px; }
+  .about-grid h3{ font-size:14.5px; margin:0 0 8px; font-family:"IBM Plex Sans",sans-serif; font-weight:700; }
+  .src-list{ list-style:none; margin:0; padding:0; display:grid; gap:9px; font-size:13px; }
+  .src-list li{ display:flex; justify-content:space-between; gap:10px; border-bottom:1px dashed var(--line); padding-bottom:8px; color:var(--ink-soft); }
+  .src-list b{ color:var(--ink); font-weight:600; }
+
+  .author-card{
+    margin-top:30px; border-top:1px solid var(--line); padding-top:26px;
+    display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:center;
+  }
+  @media (max-width:520px){ .author-card{ grid-template-columns:1fr; text-align:left; } }
+  .author-card img{
+    width:104px; height:104px; border-radius:12px; object-fit:cover;
+    border:1px solid var(--line-strong);
+  }
+  .author-card .role{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--brand); margin-bottom:4px; }
+  .author-card h3{ font-size:18px; margin:0 0 8px; }
+  .author-card p{ font-size:14px; color:var(--ink-soft); line-height:1.6; max-width:56ch; }
+
+  footer{ border-top:1px solid var(--line); padding:20px 20px 40px; }
+  footer .wrap{ font-size:11.5px; color:var(--muted); display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+
+  @media (prefers-reduced-motion:no-preference){ .panel{ animation:fade .3s ease; } }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:none; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand-mark">
+      <span class="glyph" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 6 9.5 6 14.5C6 18.09 8.69 21 12 21C15.31 21 18 18.09 18 14.5C18 9.5 12 2 12 2Z" fill="currentColor"/></svg>
+      </span>
+      <div>
+        <div class="name">Lake County AirBio</div>
+        <div class="sub">Environmental &amp; Allergy Report</div>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" data-tab="snapshot" aria-selected="true">Snapshot</button>
+      <button role="tab" data-tab="trends" aria-selected="false">Trends</button>
+      <button role="tab" data-tab="symptoms" aria-selected="false">Symptoms</button>
+      <button role="tab" data-tab="precautions" aria-selected="false">Precautions</button>
+      <button role="tab" data-tab="about" aria-selected="false">About</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ 1. SNAPSHOT ============ -->
+  <section class="panel" id="snapshot" data-panel>
+    <p class="eyebrow" id="reportDate">Daily Report</p>
+    <h1 style="font-size:clamp(25px,3.8vw,32px); margin:0;">Lake County Environmental &amp; Allergy Snapshot</h1>
+    <p class="lede">A daily summary of pollen, mold, and air-quality conditions across Lake County, Illinois, prepared to help residents understand how today's environment may relate to common allergy symptoms.</p>
+
+    <div class="locator">
+      <div class="card">
+        <div class="loc-head"><h3>Search your city in Lake County</h3><span class="loc-note">Live street map · OpenStreetMap</span></div>
+        <div class="search-row">
+          <input id="citySearch" type="text" placeholder="Type any Lake County city or village — e.g. Libertyville, Antioch, Zion…" autocomplete="off" spellcheck="false">
+          <button id="citySearchBtn" type="button">Search</button>
+          <button id="cityReset" type="button">Full county view</button>
+        </div>
+        <p class="search-msg" id="searchMsg" hidden></p>
+        <div class="map-banner" id="mapBanner"><span class="dot2"></span><span id="mapBannerText"></span></div>
+        <div class="map-stage">
+          <div id="countyMap" role="img" aria-label="Map of Lake County, Illinois with searchable cities, color-coded by today's allergy risk"></div>
+        </div>
+        <div class="map-legend">
+          <span><i style="background:var(--good)"></i>Low risk</span>
+          <span><i style="background:var(--warn)"></i>Moderate risk</span>
+          <span><i style="background:var(--critical)"></i>High risk</span>
+        </div>
+        <p class="map-caption">47 Lake County municipalities plotted on a real street map, each with live weather and AQI refreshed daily. Search, or click any marker, to zoom in and load location-adjusted figures below.</p>
+      </div>
+    </div>
+
+    <div class="risk-hero" id="riskHero"></div>
+
+    <div class="live-note" id="liveNote"></div>
+
+    <div class="grid cond" id="condGrid"></div>
+
+    <div class="callout" id="dailyNote"></div>
+  </section>
+
+  <!-- ============ 2. TRENDS ============ -->
+  <section class="panel" id="trends" data-panel hidden>
+    <p class="eyebrow">Past 7 Days · <span id="trendsLoc">Countywide</span></p>
+    <h1 style="font-size:clamp(23px,3.4vw,29px); margin:0;">Weekly Trends &amp; Pattern Analysis</h1>
+    <p class="lede">A seven-day view of how pollen, mold, air quality, and weather have moved, and the patterns those movements may be associated with.</p>
+
+    <div class="trend-grid" id="trendGrid"></div>
+
+    <div class="card" style="margin-top:18px; padding:18px;">
+      <h3 style="font-family:'IBM Plex Sans',sans-serif; font-size:15px; margin:0 0 10px;">What the pattern analyzer is seeing</h3>
+      <div class="pattern-list" id="patternList"></div>
+      <p style="font-size:11.5px; color:var(--muted); margin:14px 0 0; line-height:1.5;">Associations shown here are general patterns, not individual predictions, and are described using cautious language throughout.</p>
+    </div>
+  </section>
+
+  <!-- ============ 3. SYMPTOMS ============ -->
+  <section class="panel" id="symptoms" data-panel hidden>
+    <p class="eyebrow">Awareness</p>
+    <h1 style="font-size:clamp(23px,3.4vw,29px); margin:0;">Symptom Awareness</h1>
+    <p class="lede">Symptoms commonly associated with each environmental category below, provided for awareness rather than diagnosis.</p>
+
+    <div class="sym-grid" id="symGrid"></div>
+  </section>
+
+  <!-- ============ 4. PRECAUTIONS ============ -->
+  <section class="panel" id="precautions" data-panel hidden>
+    <p class="eyebrow">Recommended Measures</p>
+    <h1 style="font-size:clamp(23px,3.4vw,29px); margin:0;">Precautions &amp; Low-Cost Products</h1>
+    <p class="lede">A short list of practical measures for a day like today, followed by budget-friendly product categories. These are general comfort measures, not medical instructions.</p>
+
+    <ol class="steps" id="stepList"></ol>
+
+    <h2 style="font-family:'Fraunces',serif; font-size:19px; margin:32px 0 4px;">Low-cost product categories</h2>
+    <p class="lede" style="margin-top:2px; font-size:14px;">Low-cost products people commonly use for allergy comfort include the categories below. These are general categories, not specific recommendations.</p>
+    <div class="prod-grid" id="prodGrid"></div>
+
+    <div class="disclaimer-box">
+      This section is for general awareness only. Always follow product labels and consult a parent, guardian, pharmacist, or healthcare professional if unsure.
+    </div>
+  </section>
+
+  <!-- ============ 5. ABOUT ============ -->
+  <section class="panel" id="about" data-panel hidden>
+    <p class="eyebrow">About This Project</p>
+    <h1 style="font-size:clamp(23px,3.4vw,29px); margin:0;">About &amp; Disclaimer</h1>
+
+    <div class="about-grid">
+      <div>
+        <h3>What this project is</h3>
+        <p>Lake County AirBio is an independent, student-developed environmental awareness project focused on Lake County, Illinois. It consolidates daily pollen, mold, air-quality, and weather conditions into a single view and tracks how these measures change over a seven-day period, with the aim of helping residents recognize patterns that may relate to common allergy symptoms.</p>
+
+        <h3>Purpose and limitations</h3>
+        <p>This website is an awareness and pattern-analysis tool. It is not a medical device and does not provide diagnosis, treatment, or emergency guidance. Environmental sensitivity varies considerably between individuals, and the relationships described on this site are general associations rather than predictions for any one person. Residents experiencing severe or recurring symptoms should consult a licensed healthcare professional.</p>
+
+        <h3>How the risk score is calculated</h3>
+        <p>The daily Allergy Risk score is a weighted estimate: tree pollen (30%), mold risk (20%), grass pollen (15%), air quality (15%), humidity (15%), and weed pollen (5%). Rainfall and wind speed are treated as secondary, contextual factors that help explain — but do not directly score — the mold and pollen figures. The result is reported as Low, Moderate, or High, along with a plain-language explanation of the leading contributors for that day.</p>
+
+        <h3>Data &amp; methodology</h3>
+        <p>Temperature, humidity, wind speed, rainfall, and AQI are real figures for each of the 47 municipalities plotted on the map — not just the county seat. A scheduled process fetches them once a day from Open-Meteo's free weather and air-quality APIs, which blend national weather-service models, including NOAA/NWS, for the United States; the current US AQI formula is used for air quality. Pollen and mold indices remain modeled: no free, public API publishes county-level pollen counts, so these figures are produced by a documented heuristic based on the calendar month and each city's recent humidity and rainfall, clearly labeled as an estimate rather than a measurement. A future upgrade path exists to a licensed pollen feed, such as the National Allergy Bureau, or to the EPA's AirNow program as an alternative AQI source, without changing how the site displays the data.</p>
+      </div>
+      <div class="card">
+        <h3>At a glance</h3>
+        <ul class="src-list">
+          <li><b>Coverage area</b><span>Lake County, IL — 47 municipalities</span></li>
+          <li><b>Trend window</b><span>7 days</span></li>
+          <li><b>Refresh schedule</b><span>Automatic, once daily</span></li>
+          <li><b>Live figures</b><span>Temp · humidity · wind · rainfall · AQI</span></li>
+          <li><b>Live source</b><span>Open-Meteo (NOAA/NWS-based)</span></li>
+          <li><b>Modeled figures</b><span>Pollen · mold</span></li>
+          <li><b>Full-feed source (future)</b><span>EPA AirNow · National Allergy Bureau</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="author-card">
+      <img id="authorPhoto" alt="Photo of Ambuja Singh">
+      <div>
+        <div class="role">About the Author</div>
+        <h3>Ambuja Singh</h3>
+        <p>Ambuja Singh is a high school senior with an interest in combining public health data with statistics — analyzing it to build websites, like this one, that make environmental and health information easier to understand.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Lake County AirBio — an awareness and pattern-analysis tool, not medical advice</span>
+    <span>Prepared for Lake County, IL</span>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Live data, loaded from data.json (see scripts/fetch_data.py) ---------------- */
+  var DATA = null;       // populated by loadData() below
+  var days = [];         // e.g. ["Tue 9/15", ... "Mon 9/21"], filled once DATA loads
+  var today = 6;
+
+  /* ---------------- Map geometry ----------------
+     City locations now come straight from data.json (each city record carries its
+     real lat/lon — see scripts/fetch_data.py), so there's no separate hand-placed
+     position list to keep in sync. The map itself is a real Leaflet + OpenStreetMap
+     map (built in boot() below), not a schematic drawing. */
+  var LAKE_COUNTY_CENTER = [42.335, -88.02];
+  var LAKE_COUNTY_ZOOM = 10;
+  var CITY_ZOOM = 13.2;
+  var countyBounds = null; // computed from every city's real coordinates once DATA loads, so nothing is ever cropped out of the initial view
+
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function fmtDay(iso){
+    var wk = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var parts = iso.split("-").map(Number);
+    var dt = new Date(parts[0], parts[1]-1, parts[2]);
+    return wk[dt.getDay()] + " " + parts[1] + "/" + parts[2];
+  }
+
+  function dataForCity(cityName){
+    var anchor = (DATA && DATA.anchor_city) || "Waukegan";
+    var key = (cityName && DATA.cities[cityName]) ? cityName : anchor;
+    var c = DATA.cities[key];
+    var d = {
+      tree: c.tree.slice(), grass: c.grass.slice(), weed: c.weed.slice(), mold: c.mold.slice(),
+      aqi: c.aqi.slice(), humidity: c.humidity.slice(), rainfall: c.rainfall.slice(),
+      wind: c.wind.slice(), temp: c.temp.slice()
+    };
+    // risk score: 30% tree, 15% grass, 5% weed, 20% mold, 15% aqi, 15% humidity
+    d.risk = d.tree.map(function(_,i){
+      var score = 0.30*d.tree[i] + 0.15*d.grass[i] + 0.05*d.weed[i] + 0.20*d.mold[i] + 0.15*Math.min(d.aqi[i],100) + 0.15*d.humidity[i];
+      return Math.round(clamp(score,0,100));
+    });
+    return d;
+  }
+
+  function level(v, low, high){ return v < low ? "Low" : (v < high ? "Moderate" : "High"); }
+  function pillClass(lvl){ return lvl === "Low" || lvl==="Good" ? "good" : (lvl === "Moderate" ? "warn" : "critical"); }
+  function aqiLabel(v){ return v <= 50 ? "Good" : (v <= 100 ? "Moderate" : "Unhealthy"); }
+
+  /* ---------------- Narrative generation ---------------- */
+  function explainRisk(t){
+    var drivers = [];
+    if (t.tree >= 67) drivers.push({k:"elevated tree pollen", w:t.tree});
+    if (t.mold >= 55) drivers.push({k:"elevated mold risk", w:t.mold});
+    if (t.humidity >= 68) drivers.push({k:"elevated humidity", w:t.humidity});
+    if (t.aqi > 60) drivers.push({k:"reduced air quality", w:t.aqi});
+    if (t.grass >= 55) drivers.push({k:"moderate-to-high grass pollen", w:t.grass});
+    drivers.sort(function(a,b){ return b.w - a.w; });
+    var lead = drivers.slice(0,2).map(function(d){return d.k;});
+    var aqiNote = t.aqi <= 50 ? "AQI is currently good, so air quality is not a major factor today." : "Air quality is also a contributing factor today.";
+    if (lead.length === 0){
+      return "No single factor stands out today; conditions are broadly typical for the season. " + aqiNote;
+    }
+    var lvl = t.risk < 34 ? "Low" : (t.risk < 67 ? "Moderate" : "High");
+    return lvl + " risk is mainly due to " + lead.join(" and ") + ". " + aqiNote;
+  }
+
+  function pluralJoin(a,b){ return a + " and " + b; }
+
+  /* ---------------- Render: risk hero ---------------- */
+  var riskHero = document.getElementById("riskHero");
+  function renderRiskHero(cityName, d){
+    var t = { tree:d.tree[today], grass:d.grass[today], weed:d.weed[today], mold:d.mold[today], aqi:d.aqi[today], humidity:d.humidity[today], risk:d.risk[today] };
+    var lvl = t.risk < 34 ? "Low" : (t.risk < 67 ? "Moderate" : "High");
+    var arcColor = lvl === "Low" ? "var(--good)" : (lvl === "Moderate" ? "var(--warn)" : "var(--critical)");
+    var R = 42, C = 2*Math.PI*R, frac = t.risk/100;
+    riskHero.className = "risk-hero lvl-" + lvl.toLowerCase();
+    riskHero.innerHTML =
+      '<svg class="risk-dial" viewBox="0 0 100 100" role="img" aria-label="Allergy risk ' + t.risk + ' of 100, ' + lvl + '">' +
+        '<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="9"/>' +
+        '<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" ' +
+          'stroke-dasharray="'+(frac*C).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 50 50)"/>' +
+        '<text x="50" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="600" fill="#fff">'+t.risk+'</text>' +
+        '<text x="50" y="62" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="rgba(255,255,255,0.8)">of 100</text>' +
+      '</svg>' +
+      '<div>' +
+        (cityName ? '<div class="loc">' + cityName + '</div>' : '') +
+        '<h2>Today\'s Allergy Risk' + (cityName ? '' : ' · Countywide') + '</h2>' +
+        '<div class="score">' + lvl + '</div>' +
+        '<p>' + explainRisk(t) + '</p>' +
+      '</div>';
+  }
+
+  /* ---------------- Render: condition cards ---------------- */
+  var condGrid = document.getElementById("condGrid");
+  var dailyNote = document.getElementById("dailyNote");
+  function renderConditions(d){
+    var tl = {
+      tree: level(d.tree[today],34,67), grass: level(d.grass[today],34,67),
+      weed: level(d.weed[today],34,67), mold: level(d.mold[today],34,67),
+      aqiLabel: aqiLabel(d.aqi[today])
+    };
+    var conditions = [
+      { label:"Tree Pollen", value: tl.tree, sub:"index " + d.tree[today] + "/100", pill: tl.tree, hue:"var(--s-tree)" },
+      { label:"Grass Pollen", value: tl.grass, sub:"index " + d.grass[today] + "/100", pill: tl.grass, hue:"var(--s-grass)" },
+      { label:"Weed Pollen", value: tl.weed, sub:"index " + d.weed[today] + "/100", pill: tl.weed, hue:"var(--s-weed)" },
+      { label:"Mold Risk", value: tl.mold, sub:"index " + d.mold[today] + "/100", pill: tl.mold, hue:"var(--serious)" },
+      { label:"AQI", value: d.aqi[today], sub: tl.aqiLabel, pill: tl.aqiLabel, hue:"var(--brand)" },
+      { label:"Humidity", value: d.humidity[today] + "%", sub:"relative humidity", pill:null, hue:"var(--violet)" },
+      { label:"Temperature", value: d.temp[today] + "°F", sub:"current", pill:null, hue:"var(--gold)" },
+      { label:"Rainfall", value: d.rainfall[today].toFixed(1) + " in", sub:"last 24h", pill:null, hue:"var(--s-weed)" },
+      { label:"Wind Speed", value: d.wind[today] + " mph", sub:"sustained", pill:null, hue:"var(--violet)" }
+    ];
+    condGrid.innerHTML = "";
+    conditions.forEach(function(c){
+      var pillHtml = c.pill ? '<span class="pill ' + pillClass(c.pill) + '">' + c.pill + '</span>' : '';
+      var card = document.createElement("div");
+      card.className = "card cond-card";
+      card.style.background = "color-mix(in srgb, " + c.hue + " 14%, var(--card))";
+      card.style.borderColor = "color-mix(in srgb, " + c.hue + " 30%, var(--line))";
+      card.style.borderTop = "3px solid " + c.hue;
+      card.innerHTML =
+        '<div class="label">' + c.label + '</div>' +
+        '<div class="value">' + c.value + '</div>' +
+        '<div class="row"><span style="font-size:12px;color:var(--muted)">' + c.sub + '</span>' + pillHtml + '</div>';
+      condGrid.appendChild(card);
+    });
+
+    var noteBits = [];
+    if (tl.tree === "High") noteBits.push("tree pollen");
+    if (d.humidity[today] >= 68) noteBits.push("humidity");
+    if (tl.mold !== "Low") noteBits.push("mold risk");
+    var noteText = noteBits.length
+      ? noteBits.slice(0,2).join(" and ") + " " + (noteBits.length>1?"are":"is") + " elevated today, conditions that may be associated with increased sneezing, itchy eyes, and congestion for sensitive individuals."
+      : "Conditions today are broadly typical for the season, with no single factor strongly elevated.";
+    dailyNote.innerHTML = "<b>Today's note:</b> " + noteText;
+    return tl;
+  }
+
+  /* ---------------- Line chart builder ---------------- */
+  function buildChart(el, series, opts){
+    opts = opts || {};
+    var W = 460, H = 168, padL = 30, padR = 14, padT = 14, padB = 24;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var allVals = [];
+    series.forEach(function(s){ allVals = allVals.concat(s.values); });
+    var maxV = opts.max !== undefined ? opts.max : Math.max.apply(null, allVals) * 1.15;
+    var minV = opts.min !== undefined ? opts.min : 0;
+    if (maxV === minV) maxV = minV + 1;
+
+    function x(i){ return padL + (i / (days.length - 1)) * plotW; }
+    function y(v){ return padT + plotH - ((v - minV) / (maxV - minV)) * plotH; }
+
+    var svgns = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgns, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", H);
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", opts.aria || "7 day trend chart");
+
+    var bg = document.createElementNS(svgns, "rect");
+    bg.setAttribute("x",0); bg.setAttribute("y",0); bg.setAttribute("width",W); bg.setAttribute("height",H);
+    bg.setAttribute("fill","var(--chart-surface)");
+    svg.appendChild(bg);
+
+    for (var g = 0; g <= 3; g++){
+      var gv = minV + (g/3) * (maxV - minV);
+      var gy = y(gv);
+      var line = document.createElementNS(svgns, "line");
+      line.setAttribute("x1", padL); line.setAttribute("x2", W - padR);
+      line.setAttribute("y1", gy); line.setAttribute("y2", gy);
+      line.setAttribute("stroke", "var(--chart-grid)"); line.setAttribute("stroke-width", "1");
+      svg.appendChild(line);
+    }
+    var base = document.createElementNS(svgns, "line");
+    base.setAttribute("x1", padL); base.setAttribute("x2", W - padR);
+    base.setAttribute("y1", y(minV)); base.setAttribute("y2", y(minV));
+    base.setAttribute("stroke", "var(--chart-axis)"); base.setAttribute("stroke-width", "1");
+    svg.appendChild(base);
+
+    [0, Math.floor((days.length-1)/2), days.length-1].forEach(function(i){
+      var t = document.createElementNS(svgns, "text");
+      t.setAttribute("x", x(i)); t.setAttribute("y", H - 6);
+      t.setAttribute("text-anchor", i===0 ? "start" : (i===days.length-1 ? "end" : "middle"));
+      t.setAttribute("font-size", "9.5"); t.setAttribute("font-family", "IBM Plex Mono, monospace");
+      t.setAttribute("fill", "var(--chart-text)");
+      t.textContent = days[i].split(" ")[1];
+      svg.appendChild(t);
+    });
+
+    series.forEach(function(s){
+      var pts = s.values.map(function(v,i){ return x(i) + "," + y(v); }).join(" ");
+      var poly = document.createElementNS(svgns, "polyline");
+      poly.setAttribute("points", pts);
+      poly.setAttribute("fill", "none");
+      poly.setAttribute("stroke", s.color);
+      poly.setAttribute("stroke-width", "2");
+      poly.setAttribute("stroke-linecap", "round");
+      poly.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(poly);
+
+      var lastX = x(days.length - 1), lastY = y(s.values[s.values.length-1]);
+      var dot = document.createElementNS(svgns, "circle");
+      dot.setAttribute("cx", lastX); dot.setAttribute("cy", lastY); dot.setAttribute("r", "3.5");
+      dot.setAttribute("fill", "var(--chart-surface)"); dot.setAttribute("stroke", s.color); dot.setAttribute("stroke-width", "2");
+      svg.appendChild(dot);
+    });
+
+    el.innerHTML = "";
+    el.appendChild(svg);
+  }
+
+  var trendGrid = document.getElementById("trendGrid");
+  var patternList = document.getElementById("patternList");
+
+  function renderTrends(d){
+    trendGrid.innerHTML = "";
+
+    function chartCard(title, note, legendItems, ariaLabel, seriesBuilder, narrative){
+      var card = document.createElement("div");
+      card.className = "card chart-card";
+      var legendHtml = legendItems.map(function(l){
+        return '<span><i style="background:' + l.color + '"></i>' + l.name + '</span>';
+      }).join("");
+      card.innerHTML =
+        '<div class="chead"><h3>' + title + '</h3><span class="cnote">' + note + '</span></div>' +
+        (legendItems.length > 1 ? '<div class="legend">' + legendHtml + '</div>' : '') +
+        '<div class="chart-wrap"></div>' +
+        '<div class="chart-narr">' + narrative + '</div>';
+      trendGrid.appendChild(card);
+      buildChart(card.querySelector(".chart-wrap"), seriesBuilder, { aria: ariaLabel });
+    }
+
+    var tree3 = d.tree.slice(-3), moldRose = d.mold[today] > d.mold[2];
+    var rainSpike = d.rainfall[3] > 0.3 || d.rainfall[2] > 0.3;
+
+    chartCard(
+      "Pollen — 7 day trend", "index 0–100",
+      [{name:"Tree", color:"var(--s-tree)"},{name:"Grass", color:"var(--s-grass)"},{name:"Weed", color:"var(--s-weed)"}],
+      "Tree, grass and weed pollen index over the past 7 days",
+      [{values:d.tree, color:"var(--s-tree)"},{values:d.grass, color:"var(--s-grass)"},{values:d.weed, color:"var(--s-weed)"}],
+      (tree3[2] >= 67 ? "Tree pollen has stayed high for the past three days, while grass holds moderate and weed stays low." : "Tree, grass and weed pollen have moved within a moderate range this week.")
+    );
+    chartCard(
+      "Mold risk &amp; AQI — 7 day trend", "index 0–100 · AQI 0–100",
+      [{name:"Mold risk", color:"var(--serious)"},{name:"AQI", color:"var(--brand)"}],
+      "Mold risk index and AQI over the past 7 days",
+      [{values:d.mold, color:"var(--serious)"},{values:d.aqi, color:"var(--brand)"}],
+      (rainSpike ? "Mold risk increased following this week's rainfall, while AQI has stayed in the Good range throughout." : "Mold risk and AQI have both remained comparatively stable this week.")
+    );
+    chartCard(
+      "Humidity &amp; rainfall — 7 day trend", "humidity % · rainfall in",
+      [{name:"Humidity %", color:"var(--s-weed)"},{name:"Rainfall (×20, in)", color:"var(--gold)"}],
+      "Humidity percentage and rainfall in inches over the past 7 days",
+      [{values:d.humidity, color:"var(--s-weed)"},{values:d.rainfall.map(function(v){return v*20;}), color:"var(--gold)"}],
+      "Humidity rose alongside midweek rainfall, then eased over the weekend."
+    );
+    chartCard(
+      "Overall allergy risk — 7 day trend", "score 0–100",
+      [{name:"Risk score", color:"var(--critical)"}],
+      "Overall allergy risk score over the past 7 days",
+      [{values:d.risk, color:"var(--critical)"}],
+      (d.risk[today] > d.risk[0] ? "Overall risk has climbed over the week as tree pollen and mold both increased." : "Overall risk has held roughly steady across the week.")
+    );
+
+    var patterns = [];
+    patterns.push(tree3[2] >= 67 ? "Symptoms like sneezing and itchy eyes are more likely on high tree-pollen days, which have persisted through the end of this week." : "Pollen levels have stayed within a moderate range, so pollen-related symptoms are less likely to spike this week.");
+    patterns.push(rainSpike ? "Mold risk tends to rise after rainy or humid days — this week's increase followed midweek rainfall." : "No significant rainfall was recorded this week, and mold risk has stayed comparatively low.");
+    patterns.push(Math.max.apply(null,d.wind) >= 12 ? "Windier days this week may have contributed to wider pollen dispersal." : "Wind speeds stayed moderate this week, limiting pollen dispersal.");
+    patterns.push(d.aqi[today] <= 50 ? "AQI has stayed good throughout the week, so poor air quality is not a likely factor right now." : "AQI has been elevated at points this week, which may worsen coughing or throat irritation for sensitive individuals.");
+
+    patternList.innerHTML = "";
+    patterns.forEach(function(txt){
+      var row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = '<span class="mark"></span><span>' + txt + '</span>';
+      patternList.appendChild(row);
+    });
+  }
+
+  /* ---------------- Symptom cards ---------------- */
+  var symGrid = document.getElementById("symGrid");
+  function renderSymptoms(d, tl){
+    var symCategories = [
+      { name:"Tree Pollen", color:"var(--s-tree)", today: tl.tree, symptoms:["Sneezing","Runny nose","Itchy eyes","Watery eyes"] },
+      { name:"Grass Pollen", color:"var(--s-grass)", today: tl.grass, symptoms:["Congestion","Sneezing","Throat irritation","Itchy eyes"] },
+      { name:"Weed Pollen", color:"var(--s-weed)", today: tl.weed, symptoms:["Sneezing","Runny nose","Sinus pressure","Itchy throat"] },
+      { name:"Mold", color:"var(--serious)", today: tl.mold, symptoms:["Cough","Stuffy nose","Throat irritation","Eye irritation"] },
+      { name:"Poor AQI", color:"var(--brand)", today: tl.aqiLabel, symptoms:["Cough","Chest tightness","Throat irritation","Headache","Breathing discomfort"] }
+    ];
+    symGrid.innerHTML = "";
+    symCategories.forEach(function(c){
+      var card = document.createElement("div");
+      card.className = "card sym-card";
+      var chips = c.symptoms.map(function(s){ return '<span class="chip">' + s + '</span>'; }).join("");
+      card.innerHTML =
+        '<div class="top"><span class="dot" style="background:' + c.color + '"></span><h3>' + c.name + '</h3></div>' +
+        '<div style="margin-top:6px;"><span class="pill ' + pillClass(c.today) + '">Today: ' + c.today + '</span></div>' +
+        '<div class="chips">' + chips + '</div>';
+      symGrid.appendChild(card);
+    });
+  }
+
+  /* ---------------- Precaution steps ---------------- */
+  var checkIcon = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.2"><path d="M4 12l5 5L20 6"/></svg>';
+  var steps = [
+    "Check pollen and AQI levels before spending time outdoors.",
+    "Keep windows closed on days with high pollen counts.",
+    "Shower and change clothing after extended time outdoors.",
+    "Use a clean indoor air filter where available.",
+    "Watch for elevated mold risk following rainy days.",
+    "Consult a physician, or for minors a parent or guardian, if symptoms are severe or repeated."
+  ];
+  var stepList = document.getElementById("stepList");
+  steps.forEach(function(s){
+    var li = document.createElement("li");
+    li.innerHTML = checkIcon + '<span>' + s + '</span>';
+    stepList.appendChild(li);
+  });
+
+  /* ---------------- Product categories ---------------- */
+  var prodCategories = [
+    { title:"Basic Allergy Relief", items:["Generic allergy tablets","Generic antihistamines","Non-drowsy allergy medicine","Children's allergy medicine, if age-appropriate and parent-approved"], q:"generic+allergy+relief" },
+    { title:"Eye Relief", items:["Artificial tears","Allergy eye drops"], q:"allergy+eye+drops" },
+    { title:"Nasal Comfort", items:["Saline nasal spray","Nasal rinse bottle"], q:"saline+nasal+spray" },
+    { title:"Air &amp; Room Support", items:["Basic air filter","Small HEPA-style purifier","Dust masks for high pollen days"], q:"HEPA+air+purifier" },
+    { title:"Outdoor Protection", items:["Sunglasses","Hats","Face masks for mowing or high pollen days"], q:"sunglasses+outdoor" }
+  ];
+  var prodGrid = document.getElementById("prodGrid");
+  prodCategories.forEach(function(p){
+    var card = document.createElement("div");
+    card.className = "card prod-card";
+    var items = p.items.map(function(it){ return "<li>" + it + "</li>"; }).join("");
+    card.innerHTML =
+      "<h3>" + p.title + "</h3>" +
+      "<ul>" + items + "</ul>" +
+      '<a class="buy" href="https://www.target.com/s?searchTerm=' + p.q + '" target="_blank" rel="noopener">See on Target →</a>';
+    prodGrid.appendChild(card);
+  });
+
+  /* ---------------- Locator map (searchable, zoomable) ----------------
+     Everything below builds the map and renders live figures. It only runs
+     once data.json has loaded (see loadData() / boot() at the bottom of this
+     file), since every render depends on DATA. */
+  function boot(){
+  var citySearch = document.getElementById("citySearch");
+  var citySearchBtn = document.getElementById("citySearchBtn");
+  var cityResetBtn = document.getElementById("cityReset");
+  var searchMsg = document.getElementById("searchMsg");
+  var trendsLoc = document.getElementById("trendsLoc");
+  var mapBanner = document.getElementById("mapBanner");
+  var mapBannerText = document.getElementById("mapBannerText");
+  var currentCity = null;
+
+  var cityNames = Object.keys(DATA.cities).sort();
+  var RISK_COLORS = { Low:"#0ca30c", Moderate:"#e0a215", High:"#d03b3b" };
+  var majorCities = {"Antioch":1,"Fox Lake":1,"Grayslake":1,"Round Lake Beach":1,"Gurnee":1,"Waukegan":1,
+    "Zion":1,"Vernon Hills":1,"Libertyville":1,"Mundelein":1,"Wauconda":1,"Lake Forest":1,
+    "Highland Park":1,"Deerfield":1,"Lindenhurst":1,"North Chicago":1,
+    "Buffalo Grove":1,"Barrington":1,"Wheeling":1};
+
+  /* ---------------- Real map: Leaflet + OpenStreetMap-based tiles ----------------
+     CARTO's free "Positron" tiles are used instead of the default OSM style — a
+     cleaner, low-noise basemap that keeps the color-coded risk markers easy to
+     read, with a dark variant that follows the visitor's OS theme. */
+  var wantsDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var tileStyle = wantsDark ? "dark_all" : "light_all";
+  var map = L.map("countyMap", { scrollWheelZoom:false });
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/" + tileStyle + "/{z}/{x}/{y}{r}.png", {
+    maxZoom: 19,
+    subdomains: "abcd",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+  }).addTo(map);
+  map.setView(LAKE_COUNTY_CENTER, LAKE_COUNTY_ZOOM);
+
+  var cityMarkers = {};
+  var boundsPoints = [];
+  cityNames.forEach(function(name){
+    var c = DATA.cities[name];
+    if (c.lat == null || c.lon == null) return;
+    var isMajor = !!majorCities[name];
+    var d = dataForCity(name);
+    var lvl = level(d.risk[today], 34, 67);
+    var marker = L.circleMarker([c.lat, c.lon], {
+      radius: isMajor ? 7 : 5,
+      color: "#ffffff",
+      weight: 1.5,
+      fillColor: RISK_COLORS[lvl],
+      fillOpacity: 0.9
+    }).addTo(map);
+    // Hover-only label (no permanent text on the map itself, so 47 markers don't
+    // collide into unreadable clutter) — the basemap's own place names do the rest.
+    marker.bindTooltip(name + " — " + lvl + " risk", { direction:"top", offset:[0,-7], className:"city-tip" });
+    marker.bindPopup(
+      '<b>' + name + '</b><br>Today’s allergy risk: <b>' + lvl + '</b><br>' +
+      '<a class="pop-btn" href="javascript:void(0)">View ' + name + '’s full data ↓</a>'
+    );
+    marker.on("popupopen", function(n){ return function(e){
+      var btn = e.popup.getElement().querySelector(".pop-btn");
+      if (btn) btn.addEventListener("click", function(){ selectCity(n); map.closePopup(); });
+    }; }(name));
+    marker.on("click", function(n){ return function(){ selectCity(n); }; }(name));
+    cityMarkers[name] = { marker: marker, lat:c.lat, lon:c.lon, level:lvl };
+    boundsPoints.push([c.lat, c.lon]);
+  });
+
+  if (boundsPoints.length){
+    countyBounds = L.latLngBounds(boundsPoints);
+    map.fitBounds(countyBounds, { padding: [26,26] });
+  }
+
+  function refreshMarkerColors(){
+    cityNames.forEach(function(name){
+      if (!cityMarkers[name]) return;
+      var d = dataForCity(name);
+      var lvl = level(d.risk[today], 34, 67);
+      var active = name === currentCity;
+      cityMarkers[name].marker.setStyle({
+        fillColor: active ? "#C4780A" : RISK_COLORS[lvl],
+        radius: active ? 9 : (majorCities[name] ? 7 : 5),
+        weight: active ? 2.5 : 1.5
+      });
+    });
+  }
+  refreshMarkerColors();
+
+  function selectCity(name){
+    var match = cityNames.find(function(n){ return n.toLowerCase() === (name||"").toLowerCase(); });
+    currentCity = match || null;
+    refreshMarkerColors();
+
+    if (currentCity){
+      var node = cityMarkers[currentCity];
+      map.flyTo([node.lat, node.lon], CITY_ZOOM, { duration: 0.9 });
+      mapBannerText.textContent = "Showing data for " + currentCity + ", Lake County, IL";
+      mapBanner.classList.add("show");
+    } else {
+      if (countyBounds) map.flyToBounds(countyBounds, { padding:[26,26], duration: 0.9 });
+      else map.flyTo(LAKE_COUNTY_CENTER, LAKE_COUNTY_ZOOM, { duration: 0.9 });
+      mapBanner.classList.remove("show");
+    }
+
+    citySearch.value = currentCity || "";
+    searchMsg.hidden = true;
+    trendsLoc.textContent = currentCity || "Countywide";
+    render();
+    try { localStorage.setItem("airbio-city", currentCity || ""); } catch(e){}
+  }
+
+  /* Plain text search — no dropdown/autocomplete UI. Matches exactly, then by
+     "starts with", then by "contains anywhere", so close spellings still work;
+     shows a message rather than silently failing when nothing matches. */
+  function runSearch(){
+    var raw = citySearch.value.trim();
+    var val = raw.toLowerCase();
+    if (!val){ selectCity(null); return; }
+    var match = cityNames.find(function(n){ return n.toLowerCase() === val; }) ||
+                cityNames.find(function(n){ return n.toLowerCase().indexOf(val) === 0; }) ||
+                cityNames.find(function(n){ return n.toLowerCase().indexOf(val) !== -1; });
+    if (match){
+      selectCity(match);
+    } else {
+      searchMsg.textContent = "No Lake County city or village matches “" + raw + "” — check the spelling and try again.";
+      searchMsg.hidden = false;
+    }
+  }
+  citySearchBtn.addEventListener("click", runSearch);
+  citySearch.addEventListener("keydown", function(e){ if (e.key === "Enter") runSearch(); });
+  citySearch.addEventListener("input", function(){ if (!citySearch.value.trim()) searchMsg.hidden = true; });
+  cityResetBtn.addEventListener("click", function(){ selectCity(null); });
+
+  /* ---------------- Master render ---------------- */
+  var liveNote = document.getElementById("liveNote");
+  function renderLiveNote(cityName){
+    var fetchedText = GENERATED_AT ? formatGeneratedAt(GENERATED_AT) : "recently";
+    var base = '<span class="live-dot"></span><span><b>' +
+      (cityName ? cityName : "Every municipality on this map") +
+      "'s temperature, humidity, wind, rainfall, and AQI are live</b> — refreshed automatically once a day (last updated " +
+      fetchedText + ") from " +
+      '<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, which blends NOAA/NWS and other national weather models. ' +
+      'Pollen and mold indices remain modeled — see About for details.</span>';
+    liveNote.innerHTML = base;
+  }
+
+  function render(){
+    var d = dataForCity(currentCity);
+    renderRiskHero(currentCity, d);
+    var tl = renderConditions(d);
+    renderTrends(d);
+    renderSymptoms(d, tl);
+    renderLiveNote(currentCity);
+  }
+
+  var savedCity = null;
+  try { savedCity = localStorage.getItem("airbio-city"); } catch(e){}
+  if (savedCity && cityMarkers[savedCity]) selectCity(savedCity); else render();
+
+  /* Leaflet sizes itself off its container's dimensions at creation time; if the
+     map was hidden or the layout shifted (e.g. web fonts loading in), nudge it
+     to re-measure so tiles aren't cut off. */
+  setTimeout(function(){ map.invalidateSize(); }, 300);
+
+  } /* end boot() */
+
+  /* ---------------- Author photo ---------------- */
+  document.getElementById("authorPhoto").src = "assets/ambuja.jpg";
+
+  /* ---------------- Report date (client-local, independent of data load) ---------------- */
+  try {
+    var reportDateEl = document.getElementById("reportDate");
+    if (reportDateEl){
+      reportDateEl.textContent = "Daily Report · " + new Date().toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric" });
+    }
+  } catch(e){}
+
+  /* ---------------- Tabs (independent of data load) ---------------- */
+  var tabButtons = Array.prototype.slice.call(document.querySelectorAll("nav.tabs button"));
+  var panels = Array.prototype.slice.call(document.querySelectorAll("[data-panel]"));
+  function showTab(name){
+    tabButtons.forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.tab === name)); });
+    panels.forEach(function(p){ p.hidden = p.id !== name; });
+    try { localStorage.setItem("airbio-tab", name); } catch(e){}
+  }
+  tabButtons.forEach(function(b){
+    b.addEventListener("click", function(){ showTab(b.dataset.tab); window.scrollTo({top:0, behavior:"smooth"}); });
+  });
+  var savedTab = null;
+  try { savedTab = localStorage.getItem("airbio-tab"); } catch(e){}
+  if (savedTab && document.getElementById(savedTab)) showTab(savedTab);
+
+  /* ---------------- Load live data, then boot the map + renders ---------------- */
+  var GENERATED_AT = null;
+  function formatGeneratedAt(iso){
+    try {
+      var dt = new Date(iso);
+      return dt.toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit", timeZoneName:"short" });
+    } catch(e){ return iso; }
+  }
+
+  var riskHeroEl = document.getElementById("riskHero");
+  riskHeroEl.className = "risk-hero lvl-low";
+  riskHeroEl.innerHTML = '<div style="grid-column:1/-1;"><h2>Loading live data…</h2><p>Fetching today\'s weather, air quality, and pattern data for Lake County.</p></div>';
+
+  fetch("./data.json", { cache: "no-store" })
+    .then(function(res){
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(json){
+      DATA = json;
+      GENERATED_AT = DATA.generated_at;
+      var anchorDays = (DATA.cities[DATA.anchor_city] || DATA.cities[Object.keys(DATA.cities)[0]]).days;
+      days = anchorDays.map(fmtDay);
+      today = days.length - 1;
+      boot();
+    })
+    .catch(function(err){
+      riskHeroEl.className = "risk-hero lvl-high";
+      riskHeroEl.innerHTML = '<div style="grid-column:1/-1;"><h2>Live data unavailable</h2>' +
+        '<p>Today\'s figures could not be loaded (' + (err && err.message ? err.message : "network error") +
+        '). This can happen right after the site is first deployed, before the first scheduled data refresh has run — try again shortly, or trigger the "Update Lake County AirBio data" workflow manually from the repository\'s Actions tab.</p></div>';
+      console.error("Failed to load data.json:", err);
+    });
+
+})();
+</script>
+
+</body>
+</html>
