@@ -229,7 +229,7 @@
   .live-note b{ color:var(--ink); }
   .live-note a{ color:var(--brand); text-decoration:none; border-bottom:1px solid currentColor; }
 
-  /* ---- map / locator ---- */
+  /* ---- locator/search ---- */
   .locator{ margin-top:22px; }
   .locator .card{ padding:18px 18px 12px; overflow:hidden; }
   .loc-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap; }
@@ -259,30 +259,7 @@
   }
   .map-banner.show{ display:inline-flex; }
   .map-banner .dot2{ width:7px; height:7px; border-radius:50%; background:var(--brand); flex:0 0 auto; }
-  .map-stage{ position:relative; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
-  #countyMap{ width:100%; height:460px; background:var(--paper-2); }
-  @media (max-width:600px){ #countyMap{ height:360px; } }
-  .map-caption{ font-size:11.5px; color:var(--muted); margin-top:8px; }
-  .map-legend{ display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--ink-soft); }
-  .map-legend span{ display:inline-flex; align-items:center; gap:6px; }
-  .map-legend i{ width:10px; height:10px; border-radius:50%; display:inline-block; border:1.5px solid rgba(0,0,0,0.15); }
-  /* Leaflet chrome, restyled to match the site's theme */
-  .leaflet-popup-content-wrapper{ background:var(--card); color:var(--ink); border-radius:10px; }
-  .leaflet-popup-tip{ background:var(--card); }
-  .leaflet-popup-content{ font-family:"IBM Plex Sans",sans-serif; font-size:13px; margin:11px 13px; }
-  .leaflet-popup-content b{ font-family:"Fraunces",serif; font-size:14.5px; }
-  .leaflet-popup-content .pop-btn{
-    display:inline-block; margin-top:8px; font-size:12px; font-weight:700; color:var(--brand-ink);
-    background:var(--brand); padding:5px 10px; border-radius:6px; text-decoration:none; cursor:pointer;
-  }
-  .leaflet-control-attribution{ font-size:10px; background:color-mix(in srgb, var(--card) 85%, transparent) !important; color:var(--muted) !important; }
-  .leaflet-control-attribution a{ color:var(--ink-soft) !important; }
-  .city-tip{
-    background:var(--card) !important; color:var(--ink) !important; border:1px solid var(--line-strong) !important;
-    font-family:"IBM Plex Mono",monospace; font-size:11px !important; font-weight:600;
-    padding:3px 7px !important; border-radius:6px !important; box-shadow:none !important;
-  }
-  .city-tip::before{ display:none !important; }
+  .search-caption{ font-size:11.5px; color:var(--muted); margin-top:10px; }
 
   .chart-card{ padding:18px 18px 10px; }
   .chart-card .chead{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
@@ -358,7 +335,6 @@
   @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:none; } }
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
 
@@ -393,7 +369,7 @@
 
     <div class="locator">
       <div class="card">
-        <div class="loc-head"><h3>Search your city in Lake County</h3><span class="loc-note">Live street map · OpenStreetMap</span></div>
+        <div class="loc-head"><h3>Search your city in Lake County</h3><span class="loc-note">47 municipalities covered</span></div>
         <div class="search-row">
           <input id="citySearch" type="text" placeholder="Type any Lake County city or village — e.g. Libertyville, Antioch, Zion…" autocomplete="off" spellcheck="false">
           <button id="citySearchBtn" type="button">Search</button>
@@ -401,15 +377,7 @@
         </div>
         <p class="search-msg" id="searchMsg" hidden></p>
         <div class="map-banner" id="mapBanner"><span class="dot2"></span><span id="mapBannerText"></span></div>
-        <div class="map-stage">
-          <div id="countyMap" role="img" aria-label="Map of Lake County, Illinois with searchable cities, color-coded by today's allergy risk"></div>
-        </div>
-        <div class="map-legend">
-          <span><i style="background:var(--good)"></i>Low risk</span>
-          <span><i style="background:var(--warn)"></i>Moderate risk</span>
-          <span><i style="background:var(--critical)"></i>High risk</span>
-        </div>
-        <p class="map-caption">47 Lake County municipalities plotted on a real street map, each with live weather and AQI refreshed daily. Search, or click any marker, to zoom in and load location-adjusted figures below.</p>
+        <p class="search-caption">Search any Lake County city or village above to see its own live weather, AQI, and allergy risk figures below — or leave it blank for the full-county view.</p>
       </div>
     </div>
 
@@ -480,7 +448,7 @@
         <p>The daily Allergy Risk score is a weighted estimate: tree pollen (30%), mold risk (20%), grass pollen (15%), air quality (15%), humidity (15%), and weed pollen (5%). Rainfall and wind speed are treated as secondary, contextual factors that help explain — but do not directly score — the mold and pollen figures. The result is reported as Low, Moderate, or High, along with a plain-language explanation of the leading contributors for that day.</p>
 
         <h3>Data &amp; methodology</h3>
-        <p>Temperature, humidity, wind speed, rainfall, and AQI are real figures for each of the 47 municipalities plotted on the map — not just the county seat. A scheduled process fetches them once a day from Open-Meteo's free weather and air-quality APIs, which blend national weather-service models, including NOAA/NWS, for the United States; the current US AQI formula is used for air quality. Pollen and mold indices remain modeled: no free, public API publishes county-level pollen counts, so these figures are produced by a documented heuristic based on the calendar month and each city's recent humidity and rainfall, clearly labeled as an estimate rather than a measurement. A future upgrade path exists to a licensed pollen feed, such as the National Allergy Bureau, or to the EPA's AirNow program as an alternative AQI source, without changing how the site displays the data.</p>
+        <p>Temperature, humidity, wind speed, rainfall, and AQI are real figures for each of the 47 municipalities you can search above — not just the county seat. A scheduled process fetches them once a day from Open-Meteo's free weather and air-quality APIs, which blend national weather-service models, including NOAA/NWS, for the United States; the current US AQI formula is used for air quality. Pollen and mold indices remain modeled: no free, public API publishes county-level pollen counts, so these figures are produced by a documented heuristic based on the calendar month and each city's recent humidity and rainfall, clearly labeled as an estimate rather than a measurement. A future upgrade path exists to a licensed pollen feed, such as the National Allergy Bureau, or to the EPA's AirNow program as an alternative AQI source, without changing how the site displays the data.</p>
       </div>
       <div class="card">
         <h3>At a glance</h3>
@@ -515,7 +483,6 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 (function(){
   "use strict";
@@ -524,16 +491,6 @@
   var DATA = null;       // populated by loadData() below
   var days = [];         // e.g. ["Tue 9/15", ... "Mon 9/21"], filled once DATA loads
   var today = 6;
-
-  /* ---------------- Map geometry ----------------
-     City locations now come straight from data.json (each city record carries its
-     real lat/lon — see scripts/fetch_data.py), so there's no separate hand-placed
-     position list to keep in sync. The map itself is a real Leaflet + OpenStreetMap
-     map (built in boot() below), not a schematic drawing. */
-  var LAKE_COUNTY_CENTER = [42.335, -88.02];
-  var LAKE_COUNTY_ZOOM = 10;
-  var CITY_ZOOM = 13.2;
-  var countyBounds = null; // computed from every city's real coordinates once DATA loads, so nothing is ever cropped out of the initial view
 
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
   function fmtDay(iso){
@@ -856,8 +813,8 @@
     prodGrid.appendChild(card);
   });
 
-  /* ---------------- Locator map (searchable, zoomable) ----------------
-     Everything below builds the map and renders live figures. It only runs
+  /* ---------------- Search (city lookup, no map) ----------------
+     Everything below wires up the search box and renders live figures. It only runs
      once data.json has loaded (see loadData() / boot() at the bottom of this
      file), since every render depends on DATA. */
   function boot(){
@@ -871,90 +828,15 @@
   var currentCity = null;
 
   var cityNames = Object.keys(DATA.cities).sort();
-  var RISK_COLORS = { Low:"#0ca30c", Moderate:"#e0a215", High:"#d03b3b" };
-  var majorCities = {"Antioch":1,"Fox Lake":1,"Grayslake":1,"Round Lake Beach":1,"Gurnee":1,"Waukegan":1,
-    "Zion":1,"Vernon Hills":1,"Libertyville":1,"Mundelein":1,"Wauconda":1,"Lake Forest":1,
-    "Highland Park":1,"Deerfield":1,"Lindenhurst":1,"North Chicago":1,
-    "Buffalo Grove":1,"Barrington":1,"Wheeling":1};
-
-  /* ---------------- Real map: Leaflet + OpenStreetMap-based tiles ----------------
-     CARTO's free "Positron" tiles are used instead of the default OSM style — a
-     cleaner, low-noise basemap that keeps the color-coded risk markers easy to
-     read, with a dark variant that follows the visitor's OS theme. */
-  var wantsDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  var tileStyle = wantsDark ? "dark_all" : "light_all";
-  var map = L.map("countyMap", { scrollWheelZoom:false });
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/" + tileStyle + "/{z}/{x}/{y}{r}.png", {
-    maxZoom: 19,
-    subdomains: "abcd",
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
-  }).addTo(map);
-  map.setView(LAKE_COUNTY_CENTER, LAKE_COUNTY_ZOOM);
-
-  var cityMarkers = {};
-  var boundsPoints = [];
-  cityNames.forEach(function(name){
-    var c = DATA.cities[name];
-    if (c.lat == null || c.lon == null) return;
-    var isMajor = !!majorCities[name];
-    var d = dataForCity(name);
-    var lvl = level(d.risk[today], 34, 67);
-    var marker = L.circleMarker([c.lat, c.lon], {
-      radius: isMajor ? 7 : 5,
-      color: "#ffffff",
-      weight: 1.5,
-      fillColor: RISK_COLORS[lvl],
-      fillOpacity: 0.9
-    }).addTo(map);
-    // Hover-only label (no permanent text on the map itself, so 47 markers don't
-    // collide into unreadable clutter) — the basemap's own place names do the rest.
-    marker.bindTooltip(name + " — " + lvl + " risk", { direction:"top", offset:[0,-7], className:"city-tip" });
-    marker.bindPopup(
-      '<b>' + name + '</b><br>Today’s allergy risk: <b>' + lvl + '</b><br>' +
-      '<a class="pop-btn" href="javascript:void(0)">View ' + name + '’s full data ↓</a>'
-    );
-    marker.on("popupopen", function(n){ return function(e){
-      var btn = e.popup.getElement().querySelector(".pop-btn");
-      if (btn) btn.addEventListener("click", function(){ selectCity(n); map.closePopup(); });
-    }; }(name));
-    marker.on("click", function(n){ return function(){ selectCity(n); }; }(name));
-    cityMarkers[name] = { marker: marker, lat:c.lat, lon:c.lon, level:lvl };
-    boundsPoints.push([c.lat, c.lon]);
-  });
-
-  if (boundsPoints.length){
-    countyBounds = L.latLngBounds(boundsPoints);
-    map.fitBounds(countyBounds, { padding: [26,26] });
-  }
-
-  function refreshMarkerColors(){
-    cityNames.forEach(function(name){
-      if (!cityMarkers[name]) return;
-      var d = dataForCity(name);
-      var lvl = level(d.risk[today], 34, 67);
-      var active = name === currentCity;
-      cityMarkers[name].marker.setStyle({
-        fillColor: active ? "#C4780A" : RISK_COLORS[lvl],
-        radius: active ? 9 : (majorCities[name] ? 7 : 5),
-        weight: active ? 2.5 : 1.5
-      });
-    });
-  }
-  refreshMarkerColors();
 
   function selectCity(name){
     var match = cityNames.find(function(n){ return n.toLowerCase() === (name||"").toLowerCase(); });
     currentCity = match || null;
-    refreshMarkerColors();
 
     if (currentCity){
-      var node = cityMarkers[currentCity];
-      map.flyTo([node.lat, node.lon], CITY_ZOOM, { duration: 0.9 });
       mapBannerText.textContent = "Showing data for " + currentCity + ", Lake County, IL";
       mapBanner.classList.add("show");
     } else {
-      if (countyBounds) map.flyToBounds(countyBounds, { padding:[26,26], duration: 0.9 });
-      else map.flyTo(LAKE_COUNTY_CENTER, LAKE_COUNTY_ZOOM, { duration: 0.9 });
       mapBanner.classList.remove("show");
     }
 
@@ -978,7 +860,7 @@
     if (match){
       selectCity(match);
     } else {
-      searchMsg.textContent = "No Lake County city or village matches “" + raw + "” — check the spelling and try again.";
+      searchMsg.textContent = "No Lake County city or village matches \u201c" + raw + "\u201d — check the spelling and try again.";
       searchMsg.hidden = false;
     }
   }
@@ -992,7 +874,7 @@
   function renderLiveNote(cityName){
     var fetchedText = GENERATED_AT ? formatGeneratedAt(GENERATED_AT) : "recently";
     var base = '<span class="live-dot"></span><span><b>' +
-      (cityName ? cityName : "Every municipality on this map") +
+      (cityName ? cityName : "Every municipality covered by this site") +
       "'s temperature, humidity, wind, rainfall, and AQI are live</b> — refreshed automatically once a day (last updated " +
       fetchedText + ") from " +
       '<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, which blends NOAA/NWS and other national weather models. ' +
@@ -1011,17 +893,12 @@
 
   var savedCity = null;
   try { savedCity = localStorage.getItem("airbio-city"); } catch(e){}
-  if (savedCity && cityMarkers[savedCity]) selectCity(savedCity); else render();
-
-  /* Leaflet sizes itself off its container's dimensions at creation time; if the
-     map was hidden or the layout shifted (e.g. web fonts loading in), nudge it
-     to re-measure so tiles aren't cut off. */
-  setTimeout(function(){ map.invalidateSize(); }, 300);
+  if (savedCity && cityNames.indexOf(savedCity) !== -1) selectCity(savedCity); else render();
 
   } /* end boot() */
 
   /* ---------------- Author photo ---------------- */
-  document.getElementById("authorPhoto").src = "ambuja.jpg";
+  document.getElementById("authorPhoto").src = "assets/ambuja.jpg";
 
   /* ---------------- Report date (client-local, independent of data load) ---------------- */
   try {
@@ -1046,7 +923,7 @@
   try { savedTab = localStorage.getItem("airbio-tab"); } catch(e){}
   if (savedTab && document.getElementById(savedTab)) showTab(savedTab);
 
-  /* ---------------- Load live data, then boot the map + renders ---------------- */
+  /* ---------------- Load live data, then boot the search + renders ---------------- */
   var GENERATED_AT = null;
   function formatGeneratedAt(iso){
     try {
