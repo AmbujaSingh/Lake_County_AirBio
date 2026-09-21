@@ -21,7 +21,7 @@ jobs:
           python-version: "3.12"
 
       - name: Fetch live weather, AQI, and modeled pollen/mold data
-        run: python scripts/fetch_data.py --out data.json
+        run: run: python fetch_data.py --out data.json
 
       - name: Commit updated data.json (if it changed)
         run: |
