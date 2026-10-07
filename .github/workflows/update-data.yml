@@ -19,4 +19,4 @@ jobs:
       - run: python fetch_data.py --out data.json
       - run: git config user.name "airbio-data-bot" && git config user.email "actions@users.noreply.github.com"
       - run: git add data.json
-      - run: git diff --staged --quiet && echo "No data changes" || (git commit -m "Update data.json" && git push)
+      - run: git diff --staged --quiet && echo "No data changes" || (git commit -m "Update data.json" && git pull --rebase origin main && git push)
